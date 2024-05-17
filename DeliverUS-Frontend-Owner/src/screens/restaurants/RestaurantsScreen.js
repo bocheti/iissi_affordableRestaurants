@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { StyleSheet, FlatList, Pressable, View } from 'react-native'
 
-import { getAll, remove } from '../../api/RestaurantEndpoints'
+import { getAffordable, getAll, remove } from '../../api/RestaurantEndpoints'
 import ImageCard from '../../components/ImageCard'
 import TextSemiBold from '../../components/TextSemibold'
 import TextRegular from '../../components/TextRegular'
@@ -26,63 +26,70 @@ export default function RestaurantsScreen ({ navigation, route }) {
     }
   }, [loggedInUser, route])
 
+  const affordable = async function (id) {
+    const res = await getAffordable(id)
+    return res
+  }
+
   const renderRestaurant = ({ item }) => {
     return (
       <ImageCard
         imageUri={item.logo ? { uri: process.env.API_BASE_URL + '/' + item.logo } : restaurantLogo}
-        title={item.name}
+        bodyStyle={{ flexDirection: 'row' }}
         onPress={() => {
           navigation.navigate('RestaurantDetailScreen', { id: item.id })
         }}
       >
-        <TextRegular numberOfLines={2}>{item.description}</TextRegular>
-        {item.averageServiceMinutes !== null &&
-          <TextSemiBold>Avg. service time: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.averageServiceMinutes} min.</TextSemiBold></TextSemiBold>
-        }
-        <TextSemiBold>Shipping: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.shippingCosts.toFixed(2)}€</TextSemiBold></TextSemiBold>
-        {item.economic && <View style={[styles.economicIndicator, { borderColor: 'green' }]}>
-        <TextSemiBold textStyle={{ color: 'green' }}>€</TextSemiBold>
-        </View> }
-        {item.economic === false && <View style={[styles.economicIndicator, { borderColor: 'red' }]}>
-        <TextSemiBold textStyle={{ color: 'red' }}>€€</TextSemiBold>
-        </View> }
-        <View style={styles.actionButtonsContainer}>
-          <Pressable
-            onPress={() => navigation.navigate('EditRestaurantScreen', { id: item.id })
-            }
-            style={({ pressed }) => [
-              {
-                backgroundColor: pressed
-                  ? GlobalStyles.brandBlueTap
-                  : GlobalStyles.brandBlue
-              },
-              styles.actionButton
-            ]}>
-          <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-            <MaterialCommunityIcons name='pencil' color={'white'} size={20}/>
-            <TextRegular textStyle={styles.text}>
-              Edit
-            </TextRegular>
-          </View>
-        </Pressable>
+        <View style={{ flex: 4, flexDirection: 'column' }}>
+        <TextSemiBold style={{ fontSize: 15, fontFamily: 'Montserrat_600SemiBold' }}>{item.name}</TextSemiBold>
+          <TextRegular numberOfLines={2}>{item.description}</TextRegular>
+          {item.averageServiceMinutes !== null &&
+            <TextSemiBold>Avg. service time: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.averageServiceMinutes} min.</TextSemiBold></TextSemiBold>
+          }
+          <TextSemiBold>Shipping: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.shippingCosts.toFixed(2)}€</TextSemiBold></TextSemiBold>
+          <View style={styles.actionButtonsContainer}>
+            <Pressable
+              onPress={() => navigation.navigate('EditRestaurantScreen', { id: item.id })
+              }
+              style={({ pressed }) => [
+                {
+                  backgroundColor: pressed
+                    ? GlobalStyles.brandBlueTap
+                    : GlobalStyles.brandBlue
+                },
+                styles.actionButton
+              ]}>
+            <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+              <MaterialCommunityIcons name='pencil' color={'white'} size={20}/>
+              <TextRegular textStyle={styles.text}>
+                Edit
+              </TextRegular>
+            </View>
+          </Pressable>
 
-        <Pressable
-            onPress={() => { setRestaurantToBeDeleted(item) }}
-            style={({ pressed }) => [
-              {
-                backgroundColor: pressed
-                  ? GlobalStyles.brandPrimaryTap
-                  : GlobalStyles.brandPrimary
-              },
-              styles.actionButton
-            ]}>
-          <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-            <MaterialCommunityIcons name='delete' color={'white'} size={20}/>
-            <TextRegular textStyle={styles.text}>
-              Delete
-            </TextRegular>
+          <Pressable
+              onPress={() => { setRestaurantToBeDeleted(item) }}
+              style={({ pressed }) => [
+                {
+                  backgroundColor: pressed
+                    ? GlobalStyles.brandPrimaryTap
+                    : GlobalStyles.brandPrimary
+                },
+                styles.actionButton
+              ]}>
+            <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+              <MaterialCommunityIcons name='delete' color={'white'} size={20}/>
+              <TextRegular textStyle={styles.text}>
+                Delete
+              </TextRegular>
+            </View>
+          </Pressable>
           </View>
-        </Pressable>
+        </View>
+        <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          {affordable(item.id) === true && <TextRegular>affordable :)</TextRegular>}
+          {affordable(item.id) === false && <TextRegular>not affordable :(</TextRegular>}
+          <TextRegular>--------</TextRegular>
         </View>
       </ImageCard>
     )
