@@ -95,37 +95,12 @@ const destroy = async function (req, res) {
   }
 }
 
-const affordable = async function (req, res) {
-  try {
-    const restaurants = await Restaurant.findAll(
-      {
-        where: { userId: req.user.id },
-        include: { model: Product, as: 'products' }
-      }
-    )
-    const thisRestaurant = restaurants.find(restaurant => restaurant.id === parseInt(req.params.restaurantId, 10))
-    const avgThisRestaurant = thisRestaurant.products.reduce((sum, product) => sum + product.price, 0) / thisRestaurant.products.length
-
-    const restRestaurants = restaurants.filter(restaurant => restaurant.id !== parseInt(req.params.restaurantId, 10))
-    const avgElseRestaurants = restRestaurants.reduce((sum, restaurant) => sum + restaurant.products.reduce((sum, product) => sum + product.price, 0), 0) / restRestaurants.reduce((sum, restaurant) => sum + restaurant.products.length, 0)
-
-    let ans = true
-    if (avgThisRestaurant >= avgElseRestaurants) { // restaurantAvgPrice.dataValues.avgPrice < elseAvgPrice.dataValues.avgPrice
-      ans = false
-    }
-    res.json(ans)
-  } catch (err) {
-    res.status(500).send(err)
-  }
-}
-
 const RestaurantController = {
   index,
   indexOwner,
   create,
   show,
   update,
-  destroy,
-  affordable
+  destroy
 }
 export default RestaurantController

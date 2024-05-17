@@ -23,8 +23,4 @@ function remove (id) {
   return destroy(`restaurants/${id}`)
 }
 
-function getAffordable (id) {
-  return get(`restaurants/${id}/affordable`)
-}
-
-export { getAll, getDetail, getRestaurantCategories, create, update, remove, getAffordable }
+export { getAll, getDetail, getRestaurantCategories, create, update, remove }
