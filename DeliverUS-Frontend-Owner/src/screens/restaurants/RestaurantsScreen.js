@@ -40,6 +40,12 @@ export default function RestaurantsScreen ({ navigation, route }) {
           <TextSemiBold>Avg. service time: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.averageServiceMinutes} min.</TextSemiBold></TextSemiBold>
         }
         <TextSemiBold>Shipping: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.shippingCosts.toFixed(2)}€</TextSemiBold></TextSemiBold>
+        {item.economic && <View style={[styles.economicIndicator, { borderColor: 'green' }]}>
+        <TextSemiBold textStyle={{ color: 'green' }}>€</TextSemiBold>
+        </View> }
+        {item.economic === false && <View style={[styles.economicIndicator, { borderColor: 'red' }]}>
+        <TextSemiBold textStyle={{ color: 'red' }}>€€</TextSemiBold>
+        </View> }
         <View style={styles.actionButtonsContainer}>
           <Pressable
             onPress={() => navigation.navigate('EditRestaurantScreen', { id: item.id })
@@ -212,5 +218,12 @@ const styles = StyleSheet.create({
   emptyList: {
     textAlign: 'center',
     padding: 50
+  },
+  economicIndicator: {
+    borderRadius: 5,
+    borderWidth: 2,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '7vh'
   }
 })

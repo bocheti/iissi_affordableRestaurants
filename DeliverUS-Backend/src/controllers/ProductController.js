@@ -40,6 +40,31 @@ const create = async function (req, res) {
   let newProduct = Product.build(req.body)
   try {
     newProduct = await newProduct.save()
+
+    const thisProducts = await Product.findOne({
+      where: {
+        restaurantId: req.body.restaurantId
+      },
+      attributes: [
+        [Sequelize.fn('AVG', Sequelize.col('price')), 'avgPrice']
+      ]
+    })
+    const restProducts = await Product.findOne({
+      where: {
+        restaurantId: { [Sequelize.Op.ne]: req.body.restaurantId }
+      },
+      attributes: [
+        [Sequelize.fn('AVG', Sequelize.col('price')), 'avgPrice']
+      ]
+    })
+    const thisRestaurant = await Restaurant.findByPk(req.body.restaurantId)
+    if (thisProducts.dataValues.avgPrice < restProducts.dataValues.avgPrice) {
+      thisRestaurant.economic = true
+    } else {
+      thisRestaurant.economic = false
+    }
+    thisRestaurant.save()
+
     res.json(newProduct)
   } catch (err) {
     res.status(500).send(err)

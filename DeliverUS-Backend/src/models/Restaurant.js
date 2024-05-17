@@ -76,6 +76,10 @@ const loadModel = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.DATE,
       defaultValue: new Date()
+    },
+    economic: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: null
     }
   }, {
     sequelize,

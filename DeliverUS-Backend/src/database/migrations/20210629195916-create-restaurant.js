@@ -66,6 +66,10 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: new Date()
       },
+      economic: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: null
+      },
       userId: {
         allowNull: false,
         type: Sequelize.INTEGER,
